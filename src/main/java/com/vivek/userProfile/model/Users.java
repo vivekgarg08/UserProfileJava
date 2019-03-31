@@ -2,27 +2,34 @@ package com.vivek.userProfile.model;
 
 import java.util.Date;
 
+
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.vivek.userProfile.util.CustomLocalDateTimeSerializer;
+import com.vivek.userProfile.util.CustomerDateAndTimeDeserialize;
 
 
 
 @Entity
 @Table(name = "userInfo" , catalog = "USERPROFILE")
 public class Users {
-	@Id @GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer userID;
+	@Id
+	private String userID;
 	@NotBlank
 	private String firstName;
 	private String lastName;
-	@Temporal(TemporalType.TIMESTAMP)
-	@NotBlank
+	@JsonDeserialize(using=CustomerDateAndTimeDeserialize.class)
+	@NotNull(message="date can't be null")
+	@Temporal(TemporalType.DATE)
 	private Date dob;
 	@NotBlank
 	private String emailID;
@@ -36,11 +43,11 @@ public class Users {
 		this.password = password;
 	}
 
-	public Integer getUserID() {
+	public String getUserID() {
 		return userID;
 	}
 	
-	public void setUserID(Integer userID) {
+	public void setUserID(String userID) {
 		this.userID = userID;
 	}
 	public String getFirstName() {
@@ -55,9 +62,12 @@ public class Users {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
+	
+	
 	public Date getDob() {
 		return dob;
 	}
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class )
 	public void setDob(Date dob) {
 		this.dob = dob;
 	}
@@ -71,8 +81,9 @@ public class Users {
 	public Users() {
 		
 	}
-	public Users(String firstName, String lastName, Date dob, String emailID) {
+	public Users(String userID, String firstName, String lastName, Date dob, String emailID) {
 		super();
+		this.userID = userID;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.dob = dob;
